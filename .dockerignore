@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+# 向量缓存不进镜像，启动时按 docs 重建
+embeddings.npz
+chunks.json
+# 截图素材与日志不属于交付运行时
+shots/
+*.log
+eval_card.html
+shots.py
+shot_eval_card.py
