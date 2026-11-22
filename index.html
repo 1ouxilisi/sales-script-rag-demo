@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>销售接待与异议处理话术助手 · 本地 Demo</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+         background: #0f1720; color: #e6edf3; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 40px; }
+  header { margin-bottom: 20px; }
+  h1 { font-size: 21px; margin: 0 0 6px; font-weight: 600; letter-spacing: .3px; }
+  .sub { font-size: 13px; color: #8b98a5; line-height: 1.7; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px;
+           background: #16333d; color: #58c4c4; border: 1px solid #234c56; margin-right: 6px; }
+  .panel { background: #151e27; border: 1px solid #22303d; border-radius: 14px; padding: 18px; }
+  #log { min-height: 220px; max-height: 52vh; overflow-y: auto; margin-bottom: 14px;
+         display: flex; flex-direction: column; gap: 12px; }
+  .msg { font-size: 14.5px; line-height: 1.75; padding: 11px 14px; border-radius: 11px; white-space: pre-wrap; }
+  .q { background: #1d3a4d; align-self: flex-end; max-width: 82%; border: 1px solid #2b5470; }
+  .a { background: #18232e; border: 1px solid #24333f; max-width: 92%; }
+  .src { font-size: 12px; color: #7d8b98; margin-top: 8px; border-top: 1px dashed #2a3946; padding-top: 6px; }
+  .row { display: flex; gap: 10px; }
+  #q { flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid #2a3a48;
+       background: #0e1620; color: #e6edf3; font-size: 14px; outline: none; }
+  #q:focus { border-color: #3d7f8f; }
+  button { padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer;
+           background: #2f8f8f; color: #fff; font-size: 14px; font-weight: 500; }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .chips { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 12.5px; padding: 6px 11px; border-radius: 99px; cursor: pointer;
+          background: #17242e; border: 1px solid #28394a; color: #a9b8c6; }
+  .chip:hover { border-color: #3d7f8f; color: #d7e7ef; }
+  footer { margin-top: 16px; font-size: 12px; color: #66757f; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>销售接待与异议处理话术助手</h1>
+    <div class="sub">
+      <span class="badge">RAG 话术库</span><span class="badge">本地部署</span><span class="badge">bge-m3 + qwen3:8b</span><br>
+      回答只依据已灌入的接待流程与异议口径资料，不口头让价、不贬低竞品、不乱承诺；答不了会提示转人工。
+    </div>
+  </header>
+
+  <div class="panel">
+    <div id="log">
+      <div class="msg a">你好，我是销售话术助手。可以问我接待流程、试驾安排、报价口径、续航/价格/充电/保值等异议应对，以及留资跟进节奏。</div>
+    </div>
+    <div class="row">
+      <input id="q" placeholder="输入问题，例如：客户嫌价格高，费用上该怎么说明？" autocomplete="off">
+      <button id="send">发送</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <footer>
+    本地演示原型：话术资料切分 → bge-m3 向量化 → 余弦检索 Top3 → qwen3:8b 生成作答。<br>
+    样例数据仅用于演示，正式交付时替换为客户真实话术手册与政策口径。
+  </footer>
+</div>
+
+<script>
+const log = document.getElementById('log');
+const input = document.getElementById('q');
+const sendBtn = document.getElementById('send');
+const chips = document.getElementById('chips');
+
+const presets = [
+  '接待客户时需要先确认哪些关键信息？',
+  '试驾前要确认客户的什么证件？',
+  '客户有续航焦虑时应结合什么来说明？',
+  '客户留资后首次回访应在什么时间内？',
+  '客户嫌价格高，费用上应如何说明？'
+];
+presets.forEach(t => {
+  const el = document.createElement('div');
+  el.className = 'chip';
+  el.textContent = t;
+  el.onclick = () => { input.value = t; input.focus(); };
+  chips.appendChild(el);
+});
+
+function add(cls, text, sources) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.textContent = text;
+  if (sources && sources.length) {
+    const s = document.createElement('div');
+    s.className = 'src';
+    s.textContent = '参考来源：' + sources.map(v => `${v.source}（相似度 ${v.score}）`).join(' · ');
+    d.appendChild(s);
+  }
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+  return d;
+}
+
+async function ask() {
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  sendBtn.disabled = true;
+  add('q', q);
+  const pending = add('a', '检索知识库中…');
+  try {
+    const r = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q })
+    });
+    const data = await r.json();
+    pending.textContent = data.answer || '（无回答）';
+    if (data.sources && data.sources.length) {
+      const s = document.createElement('div');
+      s.className = 'src';
+      s.textContent = '参考来源：' + data.sources.map(v => `${v.source}（相似度 ${v.score}）`).join(' · ');
+      pending.appendChild(s);
+    }
+    log.scrollTop = log.scrollHeight;
+  } catch (e) {
+    pending.textContent = '请求失败：' + e;
+  } finally {
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+sendBtn.onclick = ask;
+input.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+</script>
+</body>
+</html>
