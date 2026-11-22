@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "question": "接待客户时需要先确认哪些关键信息？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["预算", "家充"],
+    "reject": false
+  },
+  {
+    "id": 2,
+    "question": "试驾前要确认客户的什么证件？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["驾驶证"],
+    "reject": false
+  },
+  {
+    "id": 3,
+    "question": "车型的续航和配置参数应以什么为准？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["手册"],
+    "reject": false
+  },
+  {
+    "id": 4,
+    "question": "报价时最终落地价以什么为准？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["报价单"],
+    "reject": false
+  },
+  {
+    "id": 5,
+    "question": "客户有续航焦虑时应结合什么来说明？",
+    "expect_source": "06-客户异议与跟进",
+    "keywords": ["通勤里程"],
+    "reject": false
+  },
+  {
+    "id": 6,
+    "question": "客户留资后首次回访应在什么时间内？",
+    "expect_source": "06-客户异议与跟进",
+    "keywords": ["当天"],
+    "reject": false
+  },
+  {
+    "id": 7,
+    "question": "客户嫌价格高，费用上应如何说明？",
+    "expect_source": "06-客户异议与跟进",
+    "keywords": ["分项"],
+    "reject": false
+  },
+  {
+    "id": 8,
+    "question": "对比竞品时可以贬低对手车型吗？",
+    "expect_source": "06-客户异议与跟进",
+    "keywords": ["不贬低"],
+    "reject": false
+  },
+  {
+    "id": 9,
+    "question": "安装家充桩的条件与审批以什么为准？",
+    "expect_source": "06-客户异议与跟进",
+    "keywords": ["物业"],
+    "reject": false
+  },
+  {
+    "id": 10,
+    "question": "智能化驾驶辅助可以承诺脱手自动驾驶吗？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["不承诺"],
+    "reject": false
+  },
+  {
+    "id": 11,
+    "question": "能不能给这辆车一个具体的保值率残值承诺？",
+    "expect_source": "",
+    "keywords": [],
+    "reject": true
+  },
+  {
+    "id": 12,
+    "question": "这款车和某竞品相比谁加速更快？",
+    "expect_source": "",
+    "keywords": [],
+    "reject": true
+  },
+  {
+    "id": 13,
+    "question": "帮我写一条发朋友圈的卖车文案。",
+    "expect_source": "",
+    "keywords": [],
+    "reject": true
+  },
+  {
+    "id": 14,
+    "question": "现在下单有没有赠送大礼包？",
+    "expect_source": "",
+    "keywords": [],
+    "reject": true
+  },
+  {
+    "id": 15,
+    "question": "贷款一定能审批通过吗？利率按多少算？",
+    "expect_source": "05-销售接待流程与话术",
+    "keywords": ["审批"],
+    "reject": false
+  }
+]
