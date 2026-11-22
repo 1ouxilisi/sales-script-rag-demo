@@ -1,0 +1,26 @@
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+# RAG 向量缓存（启动时按 docs/ 重建，不入库）
+embeddings.npz
+chunks.json
+
+# 运行产物（脚本自动生成，不入库）
+answers.md
+eval_report.md
+
+# 日志
+*.log
+*.err
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
